@@ -3,7 +3,7 @@
 // @namespace   dozory
 // @include     http://game.dozory.ru/ajax.html*
 // @include     http://game.dozory.ru/cgi-bin/main.cgi
-// @version     1.11
+// @version     1.12
 // @grant       none
 // @run-at      document-start
 // ==/UserScript==
@@ -118,7 +118,7 @@ if (window.location.href.includes('http://game.dozory.ru/ajax.html')){
                 }
     
                 var endDateTime = /\<strtime_end\>(.*?)\<\/strtime_end\>/.exec(this.responseText)
-                if (endDateTime || endDateTime.length > 1){
+                if (endDateTime != null && endDateTime.length > 1){
     
                     endDateTime = endDateTime[1];
                     var splittedDateTime = endDateTime.split(' ');
