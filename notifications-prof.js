@@ -3,7 +3,7 @@
 // @namespace   dozory
 // @include     http://game.dozory.ru/ajax.html*
 // @include     http://game.dozory.ru/cgi-bin/main.cgi
-// @version     1
+// @version     1.1
 // @grant       none
 // @run-at      document-start
 // ==/UserScript==
@@ -90,7 +90,7 @@ if (window.location.href.includes('http://game.dozory.ru/ajax.html')){
             this.addEventListener('load', function () {
                 var locationType = /\<window name=\"(.*?)\"\>/.exec(this.responseText);
     
-                if (locationType.length < 2){
+                if (!locationType || locationType.length < 2){
                     return;
                 }
     
@@ -118,21 +118,21 @@ if (window.location.href.includes('http://game.dozory.ru/ajax.html')){
                 }
     
                 var endDateTime = /\<strtime_end\>(.*?)\<\/strtime_end\>/.exec(this.responseText)
-                if (endDateTime.length > 1){
+                if (!endDateTime || endDateTime.length > 1){
     
                     endDateTime = endDateTime[1];
                     var splittedDateTime = endDateTime.split(' ');
                     var splittedDate = splittedDateTime[0].split('-');
                     var splittedTime = splittedDateTime[1].split(':');
     
-                    endTime = new Date(splittedDate[2], splittedDate[1] - 1, splittedDate[0], splittedTime[0], splittedTime[1], splittedTime[2]);
+                    endDateTime = new Date(splittedDate[2], splittedDate[1] - 1, splittedDate[0], splittedTime[0], splittedTime[1], splittedTime[2]);
                     
                     var caption = /\<rcaption\>(.*?)\<\/rcaption\>/.exec(this.responseText);
     
                     var title = `${caption[1].trim()} ${placeTitle} закончилась`;
     
-                    createNotification(title, endTime);
-                    saveNotifications(title, endTime);
+                    createNotification(title, endDateTime);
+                    saveNotifications(title, endDateTime);
                 }
             });
             origOpen.apply(this, arguments);
