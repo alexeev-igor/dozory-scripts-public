@@ -1,13 +1,16 @@
 // ==UserScript==
 // @name        auto-cast
 // @namespace   dozory
-// @version     1
+// @version     1.1
 // @grant       none
 // @include     http://game.dozory.ru/cgi-bin/main.cgi*
 // @run-at      document-end
 // ==/UserScript==
 
 window.setAutoCast = function() {
+    if (window.parent.frameset_type != 'peace'){
+        return;
+    }
 
     var templates = [
         {
