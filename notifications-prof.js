@@ -3,7 +3,7 @@
 // @namespace   dozory
 // @include     http://game.dozory.ru/ajax.html*
 // @include     http://game.dozory.ru/cgi-bin/main.cgi
-// @version     1.12
+// @version     1.13
 // @grant       none
 // @run-at      document-start
 // ==/UserScript==
@@ -103,7 +103,13 @@ if (window.location.href.includes('http://game.dozory.ru/ajax.html')){
                 var placeTitle = 'в офисе';
     
                 if (locationType === 'factory') {
-                    var subLocation = /\<block name=\"factory_body\" room=\"(.*?)\"\>/.exec(this.responseText)[1];
+                    var subLocation = /\<block name=\"factory_body\" room=\"(.*?)\"\>/.exec(this.responseText);
+                    if (!subLocation || subLocation.length < 2){
+                        return;
+                    }
+
+                    subLocation = subLocation[1];
+
                     switch (subLocation){
                         case 'machine':
                             placeTitle = 'на заводе';
