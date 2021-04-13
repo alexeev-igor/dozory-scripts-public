@@ -2,7 +2,7 @@
 // @name        market-palemoon
 // @namespace   dozory
 // @include     http://game.dozory.ru/ajax.html*
-// @version     1
+// @version     1.10
 // @grant       none
 // @run-at      document-start
 // ==/UserScript==
@@ -341,7 +341,7 @@
 
             var loc = /window name="(.*?)"\>/.exec(this.responseText);
 
-            if (loc[1] === 'street_market') {
+            if (loc != null && loc.length > 1 && loc[1] === 'street_market') {
                 if (p1 < 0) return;
 
                 if (rt.indexOf('<block name="street_market_body" room="hall">', p1) < 0)
