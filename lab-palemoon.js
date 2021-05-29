@@ -174,12 +174,34 @@ window.addEventListener('DOMContentLoaded', function (e) {
                             }
                             if (b[i].indexOf('<has_items>1') >= 0) {
                                 this.content = 'loot';
+                                const roomId = this.ariadna.state.in_room.i;
+                                const ind = this.ariadna.state.bots_met_indexes.indexOf(roomId); 
+                                if (ind > -1){
+                                    this.ariadna.state.bots_killed++;
+                                    this.ariadna.state.bots_met_indexes.splice(ind, 1);
+                                    this.ariadna.svg.header.bots.textContent = this.ariadna.state.bots_killed + ' / 19';
+                                    this.ariadna.saveContent();
+                                }
                                 break;
                             }
                             this.content = '';
                             break;
                         case 'labyrinth_items':
                             this.content = (b[i].indexOf('<items/>') < 0) ? 'loot' : '';
+                            const hasItems = b[i].indexOf('<items/>') < 0;
+                            if (hasItems){
+                            this.content = 'loot';
+                            const roomId = this.ariadna.state.in_room.i;
+                            const ind = this.ariadna.state.bots_met_indexes.indexOf(roomId);
+                            if (ind > -1){
+                                this.ariadna.state.bots_killed++;
+                                this.ariadna.state.bots_met_indexes.splice(ind, 1);
+                                this.ariadna.svg.header.bots.textContent = this.ariadna.state.bots_killed + ' / 19';
+                                this.ariadna.saveContent();
+                            }
+                            }else{
+                                this.content = '';
+                            }
                             break;
                         case 'chat':
                             if (b[i].indexOf('<text>Там выход') >= 0) this.content = 'exit';
@@ -321,6 +343,7 @@ window.addEventListener('DOMContentLoaded', function (e) {
                     dir: null, // document.getElementById('ariadna_header_dir'),
                     scale: null, // document.getElementById('ariadna_header_scale'),
                     close: null, // document.getElementById('ariadna_header_close')
+                    bots: null
                 },
                 clip_rect: null, // document.getElementById('ariadna_clip_rect'),
                 layer: {
@@ -428,7 +451,9 @@ window.addEventListener('DOMContentLoaded', function (e) {
                         return ((this.x % 2 + this.y % 2) > 0);
                     }
                 },
-                t: new Date()
+                t: new Date(),
+                bots_killed: 0,
+                bots_met_indexes: []
             }
             this.state.in_room.i = this.xy2index(this.state.in_room.x, this.state.in_room.y);
             this.position_index = function () {
@@ -695,6 +720,11 @@ jYhRkIPyH1zVilETOV19QlCSHAQ5bA7GTaEUDuFxZ9EmsCGLOLJyvv5AGmvvstVWlGt/7zNjOvevrjy1
                     x: 125,
                     y: 19
                 }));
+                obj1.appendChild(this.svg.header.bots = this.svg.create('text', {
+                    id: 'ariadna_header_bots',
+                    x: 185,
+                    y: 19
+                  }));
                 obj1.appendChild(this.svg.header.scale = this.svg.create('text', {
                     id: 'ariadna_header_scale',
                     x: '100%',
@@ -1044,6 +1074,14 @@ cP9h9ObuXfXvL5yPRZVzB0pkWABnrXJqWA/lBATAYfJEHzt+vBS3I5xziwKMrxsdPf3G6xMfb9/23Mha
                     m_rooms = list.r,
                     m_tunnels = list.l;
 
+                if (list.bots_met_indexes && list.bots_met_indexes.length > 0){
+                    this.state.bots_met_indexes = list.bots_met_indexes;
+                }
+                    
+                if (list.bots_killed){
+                    this.state.bots_killed = list.bots_killed;
+                }
+
                 // периметры комнат
 
                 for (var i in m_rooms) {
@@ -1159,9 +1197,22 @@ cP9h9ObuXfXvL5yPRZVzB0pkWABnrXJqWA/lBATAYfJEHzt+vBS3I5xziwKMrxsdPf3G6xMfb9/23Mha
                             case 'exit':
                                 elm.setAttribute('fill', this.set.map.room.background[m_rooms[i]]);
                                 break;
+                            case 'b:w':
+                            case 'b:e':
+                            case 'b:s':
+                                if (!this.state.bots_met_indexes.includes(i)){
+                                    this.state.bots_met_indexes.push(i);                
+                                }
+                                break;
                             default:
                                 if (xy.x != this.state.in_room.x || xy.y != this.state.in_room.y) elm.removeAttribute('fill');
                                 this.state.rm_opened++;
+              
+                                const index = this.state.bots_met_indexes.indexOf(i);
+                                if (index > -1){
+                                  this.state.bots_killed++;
+                                  this.state.bots_met_indexes.splice(index, 1);
+                                }
                         }
 
                         // содержимое
@@ -1179,6 +1230,7 @@ cP9h9ObuXfXvL5yPRZVzB0pkWABnrXJqWA/lBATAYfJEHzt+vBS3I5xziwKMrxsdPf3G6xMfb9/23Mha
                     // this.state.rm_conts[i] = m_rooms[i];
                 }
                 this.svg.header.rooms.textContent = this.state.rm_opened + ' / 30';
+                this.svg.header.bots.textContent = this.state.bots_killed + ' / 19';
                 if (!no_save) this.saveContent();
             }
 
@@ -1465,7 +1517,9 @@ cP9h9ObuXfXvL5yPRZVzB0pkWABnrXJqWA/lBATAYfJEHzt+vBS3I5xziwKMrxsdPf3G6xMfb9/23Mha
             this.saveContent = function () {
                 window.saveSetting('map_state', window.JSON.stringify({
                     r: this.state.rm_conts,
-                    l: this.state.rm_links
+                    l: this.state.rm_links,
+                    bots_met_indexes: this.state.bots_met_indexes,
+                    bots_killed: this.state.bots_killed
                 }), 1);
             }
             this.saveCurrent = function () {
