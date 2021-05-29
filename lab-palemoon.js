@@ -2,7 +2,7 @@
 // @name        lab-palemoon
 // @namespace   dozory
 // @include     http://game.dozory.ru/ajax.html*
-// @version     1.1
+// @version     1.2
 // @grant       none
 // @run-at      document-start
 // ==/UserScript==
