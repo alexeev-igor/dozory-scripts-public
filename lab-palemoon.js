@@ -2,7 +2,7 @@
 // @name        lab-palemoon
 // @namespace   dozory
 // @include     http://game.dozory.ru/ajax.html*
-// @version     1.2
+// @version     1.21
 // @grant       none
 // @run-at      document-start
 // ==/UserScript==
@@ -1203,6 +1203,7 @@ cP9h9ObuXfXvL5yPRZVzB0pkWABnrXJqWA/lBATAYfJEHzt+vBS3I5xziwKMrxsdPf3G6xMfb9/23Mha
                                 if (!this.state.bots_met_indexes.includes(i)){
                                     this.state.bots_met_indexes.push(i);                
                                 }
+                                this.state.rm_opened++;
                                 break;
                             default:
                                 if (xy.x != this.state.in_room.x || xy.y != this.state.in_room.y) elm.removeAttribute('fill');
