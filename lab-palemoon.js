@@ -2,7 +2,7 @@
 // @name        lab-palemoon
 // @namespace   dozory
 // @include     http://game.dozory.ru/ajax.html*
-// @version     1.22
+// @version     1.23
 // @grant       none
 // @run-at      document-start
 // ==/UserScript==
@@ -341,6 +341,8 @@ window.addEventListener('DOMContentLoaded', function (e) {
                     time: null, // document.getElementById('ariadna_header_time'),
                     rooms: null, // document.getElementById('ariadna_header_rooms'),
                     dir: null, // document.getElementById('ariadna_header_dir'),
+                    scale_in: null, // document.getElementById('ariadna_header_scale_in'),
+                    scale_out: null, // document.getElementById('ariadna_header_scale_out'),
                     scale: null, // document.getElementById('ariadna_header_scale'),
                     refresh: null, // document.getElementById('ariadna_header_refresh')
                     close: null, // document.getElementById('ariadna_header_close')
@@ -726,12 +728,30 @@ jYhRkIPyH1zVilETOV19QlCSHAQ5bA7GTaEUDuFxZ9EmsCGLOLJyvv5AGmvvstVWlGt/7zNjOvevrjy1
                     x: 185,
                     y: 19
                   }));
+                obj1.appendChild(this.svg.header.scale_in = this.svg.createImage(
+                    'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAYAAAA6/NlyAAABQElEQVR4AeyY0Q3CMAxEE3aAtWAf+IR9YC2WKFEIalTXlh1VQroeaiGcLSd3r189pJ19aBgdOAmTMFgCfKTBgAo7JCwiARNIGAyosEPCIhIwgYTBgAo7eyOcaFg8A2ACCYMBFXZIWEQCJpAwGFBhh4RFJGBCiPDj+Z42vV/KvKbfl/s1vZ6hW0eYhAxHBrt6J6Wr6XlZbvpSjvz/r+H+pL27tt7AX79DXY8ZbgeqE4a+Vgb07uo6p2zNrj1Ww3ptzPDgZvMRPAM8PfNE72rMsGe6hqfqOWl2NN2zpacnZPh6OWX3fVZ6q37MN2WWplv7eox+exJfAPyCgP0NPdIIKdAwAkXLAwlb6SDUSBiBouWBhK10EGokjEDR8kDCVjoINRJGoKh6KAUSLiFAXyQMjbeYI+ESAvRFwtB4i7ndEf4AAAD//1oqT1kAAAAGSURBVAMAPWKkeRzC5CkAAAAASUVORK5CYII=', {
+                        id: 'ariadna_header_scale_in',
+                        x: '63%',
+                        y: 0,
+                        width: 18,
+                        height: 18,
+                        transform: 'translate(-22,4)'
+                    }));
                 obj1.appendChild(this.svg.header.scale = this.svg.create('text', {
                     id: 'ariadna_header_scale',
-                    x: '85%',
+                    x: '80%',
                     y: 19,
                     transform: 'translate(-80,0)'
                 }));
+                obj1.appendChild(this.svg.header.scale_out = this.svg.createImage(
+                    'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAYAAAA6/NlyAAAB/klEQVR4AeyY7VHDMAyGbXaAtWAf+En3KWvRIUyimFj+UIqai4QdccRxFFnSo9eFq5/cyX4MeHTBTWFTeLAOiG7py/U7XL6m63oLMJ+fp0uyp6LAABbmEYZ5In7JA4sj5gl1gX1ejMSTLrDCztYFlpC0yKELfIotjSFPsaUrSNyBYv8d8PgPtnTVgQMwU0hdYFnWmdrpAkMJsoMusOzHFzqrC2xbGkQ4dNBV+FC0dnADbvdlHKuowgp/oyqlRIGr7AoGUWCFf7tVS0lgfMiW5vnhW7LPB3P3ryp7NFBxPqcDPurdtv1GfnpI4FhLccNxGHphVzwvopePDNdiKa4zf8UExotj0DtVgRcMcS2eR9PjNyo5ZXf7vjxA7TA4F29V7b6ybBk8GQdWVcGorJTdcYE95F0G7/wygRHPwbA55N6pvJDFTCGif0iWR2fMLY0z4nkj/WaN+droWgTB1rAoj02F918fSeD3txe/63pd1n+gOFRR7TzPWX6IE2O2/Zd8v+/auRx3S1Nh+rGTCveDwKvUgHn96s/bFO5PM17FpjCvX/15m8L9acar2BTm9as/b1O4P814FaspnH8j5hW9x1sN2O+pesdaUWAtVdf+TBNRYC1VJ871VxR4zao4kQdWllkUGA7YGgdxkoKLAkuCUbkMmOrMKHZTeBQlKY4fAAAA//9HHlGhAAAABklEQVQDAFws4HlxSV6EAAAAAElFTkSuQmCC', {
+                        id: 'ariadna_header_scale_out',
+                        x: '80%',
+                        y: 0,
+                        width: 18,
+                        height: 18,
+                        transform: 'translate(-22,4)'
+                    }));
                 obj1.appendChild(this.svg.header.refresh = this.svg.createImage(
                     'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAACXBIWXMAAAsTAAALEwEAmpwYAAAEYElEQVR4nLVXWW8bVRQeURD8BJYiKMszEiBem8coaeLYM2OyUBLR4lRFecOO8TJLErtZihqChKBIlNjQUjeFBDu2Z+5MvaBEdEklmpZKdZqUkjpOTO2qqkSKiAedse7ENqlbt9MjXT945p5v7nfO+c65BFGj0XRgW7N18vkWe+itFkfwHYMz+uJONvYk8Tis0R56hWQFzsyjS60D8ZXO4Zm0ZWwuu+/z81lzv5wzOIN1ugIabeHtFCdO7h5KZqz+hY3BUE4ZidwqW/u/+C2vKzDJCB+1DcQyruPXN0qBhsN5xTO5prCBZYUJ/Kl8+NnZ26XAJrc419ofWy5d5j55tdkxfbfJHqqvGkMTi77Zc+hMbng6rwHav1/c6Do4m6F56aqZl2SaE8dpHvkoFkmNvcE38H6Kky6Xfiiw1OZJ/GVyC01VTwqgPV/N38Eb2cByocMbz5Ac+rrFGX71fkxVAlvHrxRMjBCpusnICvv3jp65iTfZfKl/KE6ah8y9H2AlMIQE+9lz6HSOZITOrUFt4e0QU0yvzbewTjIiqu8JP/2goBhYpdebyFt9qb/B19B0Tnm3P5bZ8gCQvTiRgF6SRRdqBcXAHd5E1uSIkiSHLvEn0+pBXMf+KFCcNFH2MsRu99AvGUwNxLQWekvNyESTLa7oLlz/7d74pt/BRKbJObVDexnEAeoUZy8kEvGQZuiNvFzOAPI7ji4VwHevP1UgOYHXHtIc+h2LQ+fITAa+lNDJgE3wWSytmwrNoYtFUDqwrc0TS+NMhDoldDaalxdHIsWkbfXE0qq2NzqCL4D2wp+gSGYeyXoDg0/wrTI6PJOGJkM0O6bf3jd2Pqtm84llxczLR/QHFr8F34DRPTaXhc5GwE/3YwYGaWVP3FCBLWPn1nY5fn5TpbprZFalemByTaF5GekNbO6T456pTaobPg49S1gs556qSK5F3YF5qSy5IKHVB5DiuJze17mcmuzR17o+/XUVdyqaR/PaQ5IR++3+BbXIHceWCiQvfVdNFGoxkkNHPjm6qIqTzZf618gIbu0hnLDjQFKTNpA53AJB/kAGH+q0zqkd7QcSmt/3BpPlkglG8egn9/Hr6qn7flwBSi4b3FGy3RtfA+GvFXQnG3uG4tBFduKG6tP5w7UNihNO/u/FBmfoJWhd0MKKDTy13uZJ5CEutQIDKMmJstW3cLeYtDm1LarCsZWRbPSDvaNntUEAN/NagIFKOKnNf3VdGwRGT+cpTuquutHEiILNl1LpwetBgBtdwdchkSCmmF5YPV9euEOx6HDVzQaX2AAxhS5yL2AY7GDAAzWieWmc5qUYzaOlroOzqzh7Mb0w8phZ6bBWt1tSZA/VwwgKo2jleAojq/ZxzmAdjLQw2oLEFhVpc77CiQQxNbHIQuhlBmewDob4ysEeWII67RhMZihOnLhnIhGPAAzXFri+wDUGtLd14NQKqB+Iw6OITVWDJg7zGFzYoLMZHZHnWJZ9olZH/wFkEcL1hiQiyQAAAABJRU5ErkJggg==', {
                         id: 'ariadna_header_refresh',
@@ -935,7 +955,12 @@ cP9h9ObuXfXvL5yPRZVzB0pkWABnrXJqWA/lBATAYfJEHzt+vBS3I5xziwKMrxsdPf3G6xMfb9/23Mha
                             window.saveSetting('map_state', '', 1);
                             location.reload();
                             return;
-
+                        case 'ariadna_header_scale_in':
+                            this.obj.scaleMap.call(this.obj, this.obj.set.wnd.size.width / 2, this.obj.set.wnd.size.height / 2, -1);
+                            return;
+                        case 'ariadna_header_scale_out':
+                            this.obj.scaleMap.call(this.obj, this.obj.set.wnd.size.width / 2, this.obj.set.wnd.size.height / 2, 1);
+                            return;
                         default:
                             var args = /_(c|r|f|t.?)(\d*)/.exec(tgt.id);
                             if (!args) return;
@@ -1500,6 +1525,30 @@ cP9h9ObuXfXvL5yPRZVzB0pkWABnrXJqWA/lBATAYfJEHzt+vBS3I5xziwKMrxsdPf3G6xMfb9/23Mha
                 );
                 this.svg.header.scale.textContent = Math.floor(s * 100) + '%';
                 if (!no_save) this.saveWindow();
+            }
+
+            // Программное масштабирование на шаг (10%) относительно центра окна карты
+            this.zoomStep = function (direction, no_save) {
+                // direction: +1 — приблизить (на 10%), -1 — отдалить (на 10%)
+                // Используем центр видимой области карты как точку масштабирования
+                try {
+                    var w = this.ariadna.innerWidth(),
+                        h = this.ariadna.innerHeight();
+                    var dx = Math.floor(w / 2),
+                        dy = Math.floor(h / 2);
+                    this.scaleMap(dx, dy, direction, no_save);
+                } catch (e) {
+                    // на случай, если окно ещё не создано
+                    console.log('zoomStep error: ' + e);
+                }
+            }
+
+            this.zoomIn = function (no_save) {
+                this.zoomStep(1, no_save);
+            }
+
+            this.zoomOut = function (no_save) {
+                this.zoomStep(-1, no_save);
             }
 
 
