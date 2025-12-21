@@ -2,7 +2,7 @@
 // @name        lab-palemoon
 // @namespace   dozory
 // @include     http://game.dozory.ru/ajax.html*
-// @version     1.23
+// @version     1.24
 // @grant       none
 // @run-at      document-start
 // ==/UserScript==
@@ -725,17 +725,17 @@ jYhRkIPyH1zVilETOV19QlCSHAQ5bA7GTaEUDuFxZ9EmsCGLOLJyvv5AGmvvstVWlGt/7zNjOvevrjy1
                 }));
                 obj1.appendChild(this.svg.header.bots = this.svg.create('text', {
                     id: 'ariadna_header_bots',
-                    x: 185,
+                    x: 175,
                     y: 19
                   }));
                 obj1.appendChild(this.svg.header.scale_in = this.svg.createImage(
                     'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAA8CAYAAAA6/NlyAAABQElEQVR4AeyY0Q3CMAxEE3aAtWAf+IR9YC2WKFEIalTXlh1VQroeaiGcLSd3r189pJ19aBgdOAmTMFgCfKTBgAo7JCwiARNIGAyosEPCIhIwgYTBgAo7eyOcaFg8A2ACCYMBFXZIWEQCJpAwGFBhh4RFJGBCiPDj+Z42vV/KvKbfl/s1vZ6hW0eYhAxHBrt6J6Wr6XlZbvpSjvz/r+H+pL27tt7AX79DXY8ZbgeqE4a+Vgb07uo6p2zNrj1Ww3ptzPDgZvMRPAM8PfNE72rMsGe6hqfqOWl2NN2zpacnZPh6OWX3fVZ6q37MN2WWplv7eox+exJfAPyCgP0NPdIIKdAwAkXLAwlb6SDUSBiBouWBhK10EGokjEDR8kDCVjoINRJGoKh6KAUSLiFAXyQMjbeYI+ESAvRFwtB4i7ndEf4AAAD//1oqT1kAAAAGSURBVAMAPWKkeRzC5CkAAAAASUVORK5CYII=', {
                         id: 'ariadna_header_scale_in',
-                        x: '63%',
+                        x: '80%',
                         y: 0,
                         width: 18,
                         height: 18,
-                        transform: 'translate(-22,4)'
+                        transform: 'translate(-98,4)'
                     }));
                 obj1.appendChild(this.svg.header.scale = this.svg.create('text', {
                     id: 'ariadna_header_scale',
@@ -750,16 +750,16 @@ jYhRkIPyH1zVilETOV19QlCSHAQ5bA7GTaEUDuFxZ9EmsCGLOLJyvv5AGmvvstVWlGt/7zNjOvevrjy1
                         y: 0,
                         width: 18,
                         height: 18,
-                        transform: 'translate(-22,4)'
+                        transform: 'translate(-32,4)'
                     }));
                 obj1.appendChild(this.svg.header.refresh = this.svg.createImage(
                     'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAB4AAAAeCAYAAAA7MK6iAAAACXBIWXMAAAsTAAALEwEAmpwYAAAEYElEQVR4nLVXWW8bVRQeURD8BJYiKMszEiBem8coaeLYM2OyUBLR4lRFecOO8TJLErtZihqChKBIlNjQUjeFBDu2Z+5MvaBEdEklmpZKdZqUkjpOTO2qqkSKiAedse7ENqlbt9MjXT945p5v7nfO+c65BFGj0XRgW7N18vkWe+itFkfwHYMz+uJONvYk8Tis0R56hWQFzsyjS60D8ZXO4Zm0ZWwuu+/z81lzv5wzOIN1ugIabeHtFCdO7h5KZqz+hY3BUE4ZidwqW/u/+C2vKzDJCB+1DcQyruPXN0qBhsN5xTO5prCBZYUJ/Kl8+NnZ26XAJrc419ofWy5d5j55tdkxfbfJHqqvGkMTi77Zc+hMbng6rwHav1/c6Do4m6F56aqZl2SaE8dpHvkoFkmNvcE38H6Kky6Xfiiw1OZJ/GVyC01VTwqgPV/N38Eb2cByocMbz5Ac+rrFGX71fkxVAlvHrxRMjBCpusnICvv3jp65iTfZfKl/KE6ah8y9H2AlMIQE+9lz6HSOZITOrUFt4e0QU0yvzbewTjIiqu8JP/2goBhYpdebyFt9qb/B19B0Tnm3P5bZ8gCQvTiRgF6SRRdqBcXAHd5E1uSIkiSHLvEn0+pBXMf+KFCcNFH2MsRu99AvGUwNxLQWekvNyESTLa7oLlz/7d74pt/BRKbJObVDexnEAeoUZy8kEvGQZuiNvFzOAPI7ji4VwHevP1UgOYHXHtIc+h2LQ+fITAa+lNDJgE3wWSytmwrNoYtFUDqwrc0TS+NMhDoldDaalxdHIsWkbfXE0qq2NzqCL4D2wp+gSGYeyXoDg0/wrTI6PJOGJkM0O6bf3jd2Pqtm84llxczLR/QHFr8F34DRPTaXhc5GwE/3YwYGaWVP3FCBLWPn1nY5fn5TpbprZFalemByTaF5GekNbO6T456pTaobPg49S1gs556qSK5F3YF5qSy5IKHVB5DiuJze17mcmuzR17o+/XUVdyqaR/PaQ5IR++3+BbXIHceWCiQvfVdNFGoxkkNHPjm6qIqTzZf618gIbu0hnLDjQFKTNpA53AJB/kAGH+q0zqkd7QcSmt/3BpPlkglG8egn9/Hr6qn7flwBSi4b3FGy3RtfA+GvFXQnG3uG4tBFduKG6tP5w7UNihNO/u/FBmfoJWhd0MKKDTy13uZJ5CEutQIDKMmJstW3cLeYtDm1LarCsZWRbPSDvaNntUEAN/NagIFKOKnNf3VdGwRGT+cpTuquutHEiILNl1LpwetBgBtdwdchkSCmmF5YPV9euEOx6HDVzQaX2AAxhS5yL2AY7GDAAzWieWmc5qUYzaOlroOzqzh7Mb0w8phZ6bBWt1tSZA/VwwgKo2jleAojq/ZxzmAdjLQw2oLEFhVpc77CiQQxNbHIQuhlBmewDob4ysEeWII67RhMZihOnLhnIhGPAAzXFri+wDUGtLd14NQKqB+Iw6OITVWDJg7zGFzYoLMZHZHnWJZ9olZH/wFkEcL1hiQiyQAAAABJRU5ErkJggg==', {
                         id: 'ariadna_header_refresh',
-                        x: '90%',
+                        x: '100%',
                         y: 0,
                         width: 18,
                         height: 18,
-                        transform: 'translate(-22,4)'
+                        transform: 'translate(-50,4)'
                     }));
                 obj1.appendChild(this.svg.header.close = this.svg.createImage(
                     'data:image/png;base64,\
