@@ -203,9 +203,9 @@
                             if (result.turnInfo.isEnd) {
                                 totalTimeMs = 49000;
                             } else if (result.turnInfo.maxTurnNumber === -1) {
-                                totalTimeMs = 16500;
+                                totalTimeMs = 16000;
                             } else {
-                                totalTimeMs = 89500;
+                                totalTimeMs = 89000;
                             }
                             
                             window.combat_turns[id] = totalTimeMs + diffInMs;
