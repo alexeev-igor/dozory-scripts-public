@@ -2,7 +2,7 @@
 // @name        timer-synchronization
 // @description fix combats timers desync
 // @namespace   dozory
-// @version     1.1
+// @version     1.2
 // @grant       none
 // @include     http://game.dozory.ru/cgi-bin/competitors.cgi*
 // @run-at      document-end
@@ -26,29 +26,21 @@
 
         // Создаем дату, предполагая, что это СЕГОДНЯ
         let moscowDate = new Date(`${todayISO}T${moscowTimeStr}${offsetStr}`);
+        console.log(`now: ${new Date()}`);
+        console.log(`moscowDate: ${moscowDate}`);
         let diffInMs = moscowDate - now;
 
         // --- ЛОГИКА КОРРЕКТИРОВКИ ---
         // Если разница больше 12 часов (43200000 мс), значит мы ошиблись с днем.
-        // Если сейчас 02:00, а в Москве 00:00. Разница должна быть -2 часа (в идеале).
-        // Но так как даты совпали, получилось -24 часа.
-
         if (diffInMs < -43200000) {
-            // Если время в Москве кажется сильно "прошлым", возможно, в Москве уже СЛЕДУЮЩИЙ день
-            // или наоборот, у нас уже следующий день, а московская строка была для старой даты.
-            // Добавляем 1 день к московской дате
             moscowDate.setDate(moscowDate.getDate() + 1);
             diffInMs = moscowDate - now;
         } else if (diffInMs > 43200000) {
-            // Если время в Москве кажется сильно в будущем, вычитаем 1 день
             moscowDate.setDate(moscowDate.getDate() - 1);
             diffInMs = moscowDate - now;
         }
 
-        console.log(`diffInMs: ${diffInMs}`);
-        let result = Math.round((moscowDate - now) / 1000);
-        console.log(`diffInSeconds: ${result}`);
-        return Math.abs(result);
+        return diffInMs;
     }
 
     function findCombatLogLinks() {
@@ -165,49 +157,61 @@
             return;
         }
 
-        // Переопределяем функцию update на странице, чтобы избежать race condition
-        // и использовать исправленную логику setTimeout.
-        // Мы используем те же глобальные переменные, что и оригинальный скрипт.
-        let lastUpdated = new Date();
+        window.synced_combats = {};
+        let lastUpdated = performance.now();
         window.update = function() {
-            if ((new Date() - lastUpdated) < 1000) {
-                window.setTimeout(window.update, 100);
-                return;
-            }
+            let now = performance.now();
+            let delta = now - lastUpdated;
+            lastUpdated = now;
 
             for (var i = 0; i < combats.length; i++) {
                 var id = combats[i];
-                if (combat_turns[id] < 1) continue;
-                jQuery('#countdown_' + id).html(getSec(combat_turns[id]));
-                combat_turns[id]--;
+                if (combat_turns[id] === undefined || combat_turns[id] < 0) continue;
+                
+                // Если значение маленькое (например, < 1000), скорее всего это секунды от сервера.
+                // предполагаем, что серверные секунды не могут быть больше 1000.
+                if (combat_turns[id] < 1000 && !window.synced_combats?.[id]) {
+                    combat_turns[id] *= 1000;
+                }
+
+                combat_turns[id] -= delta;
+                
+                if (combat_turns[id] < 0) {
+                    jQuery('#countdown_' + id).html(getSec(0));
+                    continue;
+                }
+                
+                // Math.ceil для отображения целых секунд
+                jQuery('#countdown_' + id).html(getSec(Math.ceil(combat_turns[id] / 1000)));
             }
 
-            lastUpdated = new Date();
-            window.setTimeout(window.update, 1000);
+            window.setTimeout(window.update, 100);
         };
 
-        // Запускаем обновление каждого боя независимо по мере загрузки данных
         links.forEach(link => {
             fetchCombatData(link.href)
                 .then(result => {
                     const id = link.combatId;
                     if (result.turnInfo.maxTime) {
-                        const dif = getSecondsDiffWithMoscow(result.turnInfo.maxTime);
+                        const diffInMs = getSecondsDiffWithMoscow(result.turnInfo.maxTime);
 
-                        if (window.combat_turns && window.combat_turns[id]) {
+                        if (window.combat_turns && window.combat_turns[id] !== undefined) {
                             console.log(`Текущее время: ${new Date()}`);
-                            console.log(`Бой ${id}: синхронизация (время из лога: ${result.turnInfo.maxTime}, разница: ${dif}с)`);
-                            console.log(`Бой ${id}, серверный таймер: ${window.combat_turns[id]}с`);
-
+                            console.log(`Бой ${id}: синхронизация (время из лога: ${result.turnInfo.maxTime}, разница в мс: ${diffInMs})`);
+                            
+                            let totalTimeMs = 0;
                             if (result.turnInfo.isEnd) {
-                                window.combat_turns[id] = 49 - dif;
+                                totalTimeMs = 49000;
                             } else if (result.turnInfo.maxTurnNumber === -1) {
-                                window.combat_turns[id] = 17 - dif;
+                                totalTimeMs = 16500;
                             } else {
-                                window.combat_turns[id] = 90 - dif;
+                                totalTimeMs = 89500;
                             }
+                            
+                            window.combat_turns[id] = totalTimeMs + diffInMs;
+                            window.synced_combats[id] = true;
 
-                            console.log(`Бой ${id}, обновленный клиентский таймер: ${window.combat_turns[id]}с`);
+                            console.log(`Бой ${id}, обновленный клиентский таймер: ${window.combat_turns[id]}мс`);
                         }
                     } else {
                         console.log(`Бой ${id}: лог не содержит времени`);
