@@ -2,7 +2,7 @@
 // @name        timer-synchronization
 // @description fix combats timers desync
 // @namespace   dozory
-// @version     1.2
+// @version     1.3
 // @grant       none
 // @include     http://game.dozory.ru/cgi-bin/competitors.cgi*
 // @run-at      document-end
@@ -30,7 +30,6 @@
         console.log(`moscowDate: ${moscowDate}`);
         let diffInMs = moscowDate - now;
 
-        // --- ЛОГИКА КОРРЕКТИРОВКИ ---
         // Если разница больше 12 часов (43200000 мс), значит мы ошиблись с днем.
         if (diffInMs < -43200000) {
             moscowDate.setDate(moscowDate.getDate() + 1);
@@ -73,7 +72,7 @@
             if (messages.length === 0) {
                 return {
                     maxTime: null,
-                    maxTurnnumber: null
+                    maxTurnNumber: null
                 };
             }
 
@@ -108,6 +107,7 @@
                                 break;
                             } else {
                                 // начало боя (сообщение о нападе)
+                                console.log(`Начало боя в ${timeAttribute}`);
                                 turnNumber = -1;
                             }
                         }
@@ -120,6 +120,10 @@
                         }
                     }
                 }
+            }
+
+            if (maxTurnNumber <= 0) {
+                console.log(`turnnumber ${maxTurnNumber}, maxtime: ${maxTime}`);
             }
 
             return {
@@ -149,6 +153,42 @@
         }
     }
 
+    window.synced_combats = {};
+    let lastUpdated = performance.now();
+    let calledReload = false;
+    window.update = function() {
+        let now = performance.now();
+        let delta = now - lastUpdated;
+        lastUpdated = now;
+        
+        for (var i = 0; i < combats.length; i++) {
+            var id = combats[i];
+            if (synced_combats[id] === undefined) 
+                continue;
+
+            if (calledReload && synced_combats[id] < 0)
+                continue;
+            
+            if (!calledReload && synced_combats[id] <= 0){
+                calledReload = true;
+                location.reload();
+            }
+            
+            synced_combats[id] -= delta;
+
+            if (synced_combats[id] <= 0) {
+                jQuery('#countdown_' + id).html(getSec(0));
+                calledReload = true;
+                synced_combats[id] = -1;
+                continue;
+            }
+
+            jQuery('#countdown_' + id).html(getSec(Math.ceil(synced_combats[id] / 1000)));
+        }
+
+        window.setTimeout(window.update, 100);
+    };
+    
     async function processAllCombatLogs() {
         const links = findCombatLogLinks();
         console.log(`Найдено боевых логов: ${links.length}`, links);
@@ -157,48 +197,31 @@
             return;
         }
 
-        window.synced_combats = {};
-        let lastUpdated = performance.now();
-        window.update = function() {
-            let now = performance.now();
-            let delta = now - lastUpdated;
-            lastUpdated = now;
+        const MAX_RETRIES = 3;
+        const RETRY_DELAY_MS = 1000;
+        const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-            for (var i = 0; i < combats.length; i++) {
-                var id = combats[i];
-                if (combat_turns[id] === undefined || combat_turns[id] < 0) continue;
-                
-                // Если значение маленькое (например, < 1000), скорее всего это секунды от сервера.
-                // предполагаем, что серверные секунды не могут быть больше 1000.
-                if (combat_turns[id] < 1000 && !window.synced_combats?.[id]) {
-                    combat_turns[id] *= 1000;
-                }
+        links.forEach(async (link) => {
+            let attempt = 0;
+            let success = false;
+            let lastError = null;
 
-                combat_turns[id] -= delta;
-                
-                if (combat_turns[id] < 0) {
-                    jQuery('#countdown_' + id).html(getSec(0));
-                    continue;
-                }
-                
-                // Math.ceil для отображения целых секунд
-                jQuery('#countdown_' + id).html(getSec(Math.ceil(combat_turns[id] / 1000)));
-            }
+            while (attempt < MAX_RETRIES && !success) {
+                try {
+                    if (attempt > 0) {
+                        await delay(RETRY_DELAY_MS);
+                    }
 
-            window.setTimeout(window.update, 100);
-        };
-
-        links.forEach(link => {
-            fetchCombatData(link.href)
-                .then(result => {
+                    const result = await fetchCombatData(link.href);
                     const id = link.combatId;
+
                     if (result.turnInfo.maxTime) {
                         const diffInMs = getSecondsDiffWithMoscow(result.turnInfo.maxTime);
 
                         if (window.combat_turns && window.combat_turns[id] !== undefined) {
                             console.log(`Текущее время: ${new Date()}`);
-                            console.log(`Бой ${id}: синхронизация (время из лога: ${result.turnInfo.maxTime}, разница в мс: ${diffInMs})`);
-                            
+                            console.log(`Бой ${id}: синхронизация (время из лога: ${result.turnInfo.maxTime}, ход: ${result.turnInfo.maxTurnNumber} разница в мс: ${diffInMs})`);
+
                             let totalTimeMs = 0;
                             if (result.turnInfo.isEnd) {
                                 totalTimeMs = 49000;
@@ -207,19 +230,24 @@
                             } else {
                                 totalTimeMs = 89000;
                             }
-                            
-                            window.combat_turns[id] = totalTimeMs + diffInMs;
-                            window.synced_combats[id] = true;
 
-                            console.log(`Бой ${id}, обновленный клиентский таймер: ${window.combat_turns[id]}мс`);
+                            window.synced_combats[id] = totalTimeMs + diffInMs;
                         }
                     } else {
                         console.log(`Бой ${id}: лог не содержит времени`);
                     }
-                })
-                .catch(error => {
-                    console.error(`Ошибка при обработке боя ${link.combatId}:`, error);
-                });
+
+                    success = true;
+                } catch (error) {
+                    attempt++;
+                    lastError = error;
+                    console.warn(`Ошибка при обработке боя ${link.combatId} (попытка ${attempt}/${MAX_RETRIES}):`, error);
+                }
+            }
+
+            if (!success) {
+                console.error(`Не удалось обработать бой ${link.combatId} после ${MAX_RETRIES} попыток. Последняя ошибка:`, lastError);
+            }
         });
     }
 
