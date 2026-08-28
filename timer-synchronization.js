@@ -26,8 +26,6 @@
 
         // Создаем дату, предполагая, что это СЕГОДНЯ
         let moscowDate = new Date(`${todayISO}T${moscowTimeStr}${offsetStr}`);
-        console.log(`now: ${new Date()}`);
-        console.log(`moscowDate: ${moscowDate}`);
         let diffInMs = moscowDate - now;
 
         // Если разница больше 12 часов (43200000 мс), значит мы ошиблись с днем.
@@ -95,8 +93,6 @@
                         if (strongElements.length > 0) {
                             if (strongElements[0].textContent === 'БОЙ НАЧАТ'){
                                 turnNumber = 0;
-                            } else {
-                                console.log(`Необработанный кейс, есть STRONG тег с контентом: ${strongElements[0].textContent}`);
                             }
                         } else {
                             const spanElements = message.getElementsByTagName('span');
@@ -107,7 +103,6 @@
                                 break;
                             } else {
                                 // начало боя (сообщение о нападе)
-                                console.log(`Начало боя в ${timeAttribute}`);
                                 turnNumber = -1;
                             }
                         }
@@ -120,10 +115,6 @@
                         }
                     }
                 }
-            }
-
-            if (maxTurnNumber <= 0) {
-                console.log(`turnnumber ${maxTurnNumber}, maxtime: ${maxTime}`);
             }
 
             return {
@@ -191,7 +182,6 @@
     
     async function processAllCombatLogs() {
         const links = findCombatLogLinks();
-        console.log(`Найдено боевых логов: ${links.length}`, links);
 
         if (links.length === 0) {
             return;
@@ -219,9 +209,6 @@
                         const diffInMs = getSecondsDiffWithMoscow(result.turnInfo.maxTime);
 
                         if (window.combat_turns && window.combat_turns[id] !== undefined) {
-                            console.log(`Текущее время: ${new Date()}`);
-                            console.log(`Бой ${id}: синхронизация (время из лога: ${result.turnInfo.maxTime}, ход: ${result.turnInfo.maxTurnNumber} разница в мс: ${diffInMs})`);
-
                             let totalTimeMs = 0;
                             if (result.turnInfo.isEnd) {
                                 totalTimeMs = 49000;
@@ -233,8 +220,6 @@
 
                             window.synced_combats[id] = totalTimeMs + diffInMs;
                         }
-                    } else {
-                        console.log(`Бой ${id}: лог не содержит времени`);
                     }
 
                     success = true;
